@@ -1,13 +1,20 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout.html.twig' %}
 
 {% block title %}Edit Blog{% endblock %}
 
 {% block body %}
     <h1>Edit Blog</h1>
 
-    {{ include('blog/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+        <button class="btn">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
 
     <a href="{{ path('app_blog_index') }}">back to list</a>
 
-    {{ include('blog/_delete_form.html.twig') }}
-{% endblock %}
+    <form method="post" action="{{ path('app_blog_delete', {'id': blog.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ blog.id) }}">
+        <button class="btn">Delete</button>
+    </form>
+
+    {% endblock %}
