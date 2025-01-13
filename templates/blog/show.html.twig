@@ -15,6 +15,13 @@
                 <th>Title</th>
                 <td>{{ blog.title }}</td>
             </tr>
+            {% if blog.category %}
+                <tr>
+                    <th>Category</th>
+                    <td>{{ blog.category.fullname | raw   }}</td>
+                </tr>
+            {% endif %}
+
             <tr>
                 <th>Description</th>
                 <td>{{ blog.description }}</td>

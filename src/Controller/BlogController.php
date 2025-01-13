@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/blog')]
 final class BlogController extends AbstractController
 {
-    #[Route(name: 'app_blog_index', methods: ['GET'])]
+    #[Route('/',name: 'app_blog_index', methods: ['GET'])]
     public function index(BlogRepository $blogRepository): Response
     {
         return $this->render('blog/index.html.twig', [
