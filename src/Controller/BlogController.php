@@ -30,6 +30,7 @@ final class BlogController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+//            dd($blog);
             $entityManager->persist($blog);
             $entityManager->flush();
 
