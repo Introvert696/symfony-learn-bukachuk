@@ -5,28 +5,34 @@ namespace App\Form\DataTransformer;
 use App\Entity\Tag;
 use App\Repository\TagRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\Exception\TransformationFailedException;
 
 class TagTransformer implements DataTransformerInterface
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private TagRepository $tagRepository,
+        private readonly TagRepository $tagRepository,
     )
     {
     }
 
-
-    public function transform($tag): string
+    /**
+     * @param PersistentCollection<Tag> $value
+     * @return string
+     */
+    public function transform($value): string
     {
 
-        if (null === $tag) {
+        if (null === $value) {
             return '';
         }
-        dd($tag);
-        return $tag->getId();
+        $array = [];
+        foreach ($value as $tag){
+            $array[] = $tag->getName();
+
+        }
+
+        return implode(',',$array);
     }
 
 
@@ -34,7 +40,7 @@ class TagTransformer implements DataTransformerInterface
     {
 
         if (!$value) {
-            return null;
+            return new ArrayCollection();
         }
 
         $items = explode(",",$value);
