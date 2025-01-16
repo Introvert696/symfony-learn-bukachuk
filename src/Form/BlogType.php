@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Blog;
 use App\Entity\Category;
+use App\Entity\User;
 use App\Form\DataTransformer\TagTransformer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -54,6 +55,15 @@ class BlogType extends AbstractType
                 'required' => false,
                 'empty_data' => null,
                 'placeholder' => '--- выбор категории ---'
+            ])->add('user',EntityType::class,[
+                'class' => User::class,
+                'query_builder' => function($repository){
+                    return $repository->createQueryBuilder('p')->orderBy('p.id','ASC');
+                },
+                'required' => false,
+                'empty_data' => null,
+                'choice_label' => 'email',
+                'placeholder' => '--- выбор пользователя ---'
             ]);
         }
         $builder->add('tags',TextType::class,array(

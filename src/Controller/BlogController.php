@@ -8,16 +8,18 @@ use App\Form\BlogFilterType;
 use App\Form\BlogType;
 use App\Repository\BlogRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/user/blog')]
 final class BlogController extends AbstractController
 {
     #[Route('/',name: 'app_user_blog_index', methods: ['GET'])]
-    public function index(Request $request,BlogRepository $blogRepository): Response
+    public function index(Request $request,PaginationInterface $paginator,BlogRepository $blogRepository): Response
     {
         $blogFilter = new BlogFilter($this->getUser());
         $form = $this->createForm(BlogFilterType::class, $blogFilter);
@@ -54,7 +56,7 @@ final class BlogController extends AbstractController
     }
 
 
-
+    #[IsGranted('edit', 'blog','blog not found',404)]
     #[Route('/{id}/edit', name: 'app_user_blog_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Blog $blog, EntityManagerInterface $entityManager): Response
     {
@@ -75,6 +77,7 @@ final class BlogController extends AbstractController
         ]);
     }
 
+    #[IsGranted('edit', 'blog','blog not found',404)]
     #[Route('/{id}', name: 'app_user_blog_delete', methods: ['POST'])]
     public function delete(Request $request, Blog $blog, EntityManagerInterface $entityManager): Response
     {

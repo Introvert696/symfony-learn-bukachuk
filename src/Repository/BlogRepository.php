@@ -39,7 +39,7 @@ class BlogRepository extends ServiceEntityRepository
         }
 //        dd($blogs->getQuery()->getSQL());
 
-        return $blogs->getQuery()->getResult();
+        return $blogs;
 
     }
 
