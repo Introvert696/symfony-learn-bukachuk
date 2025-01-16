@@ -26,7 +26,7 @@ class Blog
     private ?string $title = null;
 
     #[Assert\NotBlank]
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     #[Assert\NotBlank]

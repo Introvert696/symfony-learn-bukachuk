@@ -6,6 +6,7 @@ use App\Entity\Blog;
 use App\Entity\Category;
 use App\Form\DataTransformer\TagTransformer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
@@ -16,7 +17,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class BlogType extends AbstractType
 {
-    public function __construct(private readonly TagTransformer $transformer)
+    public function __construct(
+        private readonly TagTransformer $transformer,
+        private readonly Security $security
+    )
+
     {
 
     }
@@ -37,18 +42,21 @@ class BlogType extends AbstractType
             ])
             ->add('text', TextareaType::class,[
                 'required' => true
-            ])
-            ->add('category',EntityType::class,[
+            ]);
+
+        if($this->security->isGranted('ROLE_ADMIN')){
+            $builder->add('category',EntityType::class,[
                 'class' => Category::class,
                 'query_builder' => function($repository){
-                return $repository->createQueryBuilder('p')->orderBy('p.name','ASC');
+                    return $repository->createQueryBuilder('p')->orderBy('p.name','ASC');
                 },
                 'choice_label' => 'name',
                 'required' => false,
                 'empty_data' => null,
                 'placeholder' => '--- выбор категории ---'
-            ])
-            ->add('tags',TextType::class,array(
+            ]);
+        }
+        $builder->add('tags',TextType::class,array(
                 'label'=>'Тэги',
                 'required' => false
             ))

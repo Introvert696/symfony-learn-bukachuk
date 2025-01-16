@@ -61,6 +61,8 @@ final class BlogController extends AbstractController
         $form = $this->createForm(BlogType::class, $blog);
         $form->handleRequest($request);
 
+
+
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 

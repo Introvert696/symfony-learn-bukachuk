@@ -26,11 +26,11 @@
             <tr>
                 <td>{{ blog.id }}</td>
                 <td>{{ blog.title }}</td>
-                <td>{{ blog.description }}</td>
-                <td>{{ blog.text }}</td>
+                <td>{{ blog.description | length > 50 ? blog.description | slice(0, 50) ~ '...' : blog.description }}</td>
+                <td>{{ blog.text | length > 50 ? blog.text | slice(0, 50) ~ '...' : blog.text}}</td>
                 <td>
-                    <a href="{{ path('app_blog_show', {'id': blog.id}) }}">show</a>
-                    <a href="{{ path('app_blog_edit', {'id': blog.id}) }}">edit</a>
+
+                    <a href="{{ path('app_user_blog_edit', {'id': blog.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}
