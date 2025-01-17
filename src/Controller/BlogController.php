@@ -7,6 +7,7 @@ use App\Filter\BlogFilter;
 use App\Form\BlogFilterType;
 use App\Form\BlogType;
 use App\Repository\BlogRepository;
+use App\Service\ContentWatchApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +36,7 @@ final class BlogController extends AbstractController
     }
 
     #[Route('/new', name: 'app_user_blog_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager,ContentWatchApi $contentWatchApi): Response
     {
         $blog = new Blog($this->getUser());
         $form = $this->createForm(BlogType::class, $blog);
@@ -44,6 +45,11 @@ final class BlogController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 //            dd($blog);
             $entityManager->persist($blog);
+            $entityManager->flush();
+
+            $blog->setPercent(
+                $contentWatchApi->checkText($blog->getText())
+            );
             $entityManager->flush();
 
             return $this->redirectToRoute('app_user_blog_index', [], Response::HTTP_SEE_OTHER);

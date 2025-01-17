@@ -27,7 +27,7 @@ final class BlogController extends AbstractController
         $pagination = $paginator->paginate(
             $blogRepository->findByBlogFilter($blogFilter),
             $request->query->getInt('page', 1),
-            5
+            10
         );
 
 

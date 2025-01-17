@@ -50,6 +50,11 @@ class Blog
     private ArrayCollection|PersistentCollection $tags;
 
 
+
+    #[ORM\Column(type: Types::SMALLINT,nullable: true)]
+    private ?string $percent = null;
+
+
     public function __construct(UserInterface|User $user){
         $this->user = $user;
     }
@@ -120,6 +125,9 @@ class Blog
 
         return $this;
     }
+
+
+
     public function addTag(Tag $tag): void
     {
         $this->tags[] = $tag;
@@ -134,6 +142,19 @@ class Blog
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPercent(): ?string
+    {
+        return $this->percent;
+    }
+
+
+    public function setPercent(?string $percent): static
+    {
+        $this->percent = $percent;
 
         return $this;
     }
