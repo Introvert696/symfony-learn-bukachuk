@@ -19,6 +19,7 @@
                 <th>Title</th>
                 <th>Description</th>
                 <th>Text</th>
+                <th>Percent</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -30,6 +31,7 @@
                 <td>{{ blog.title }}</td>
                 <td>{{ blog.description | length > 50 ? blog.description | slice(0, 50) ~ '...' : blog.description }}</td>
                 <td>{{ blog.text | length > 50 ? blog.text | slice(0, 50) ~ '...' : blog.text}}</td>
+                <td>{{ blog.percent }}</td>
                 <td>
 
                     <a href="{{ path('app_user_blog_edit', {'id': blog.id}) }}">edit</a>

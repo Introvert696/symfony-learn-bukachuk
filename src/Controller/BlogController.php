@@ -9,7 +9,7 @@ use App\Form\BlogType;
 use App\Repository\BlogRepository;
 use App\Service\ContentWatchApi;
 use Doctrine\ORM\EntityManagerInterface;
-use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,17 +20,21 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class BlogController extends AbstractController
 {
     #[Route('/',name: 'app_user_blog_index', methods: ['GET'])]
-    public function index(Request $request,PaginationInterface $paginator,BlogRepository $blogRepository): Response
+    public function index(Request $request,PaginatorInterface $paginator,BlogRepository $blogRepository): Response
     {
         $blogFilter = new BlogFilter($this->getUser());
         $form = $this->createForm(BlogFilterType::class, $blogFilter);
         $form->handleRequest($request);
 //        dd($form->get('content')->getData());
-
+        $pagination = $paginator->paginate(
+            $blogRepository->findByBlogFilter($blogFilter),
+            $request->query->getInt('page', 1),
+            10
+        );
 
 
         return $this->render('blog/index.html.twig', [
-            'blogs' => $blogRepository->findByBlogFilter($blogFilter),
+            'pagination' => $pagination,
             'form' => $form->createView(),
         ]);
     }
