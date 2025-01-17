@@ -49,6 +49,8 @@ class Blog
     #[ORM\ManyToMany(targetEntity: 'App\Entity\Tag',cascade: ['persist'])]
     private ArrayCollection|PersistentCollection $tags;
 
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $status = null;
 
 
     #[ORM\Column(type: Types::SMALLINT,nullable: true)]
@@ -158,5 +160,20 @@ class Blog
 
         return $this;
     }
+
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+
+    public function setStatus(?string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
 
 }

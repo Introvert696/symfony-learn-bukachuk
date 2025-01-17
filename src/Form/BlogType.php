@@ -9,6 +9,7 @@ use App\Form\DataTransformer\TagTransformer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -64,7 +65,15 @@ class BlogType extends AbstractType
                 'empty_data' => null,
                 'choice_label' => 'email',
                 'placeholder' => '--- выбор пользователя ---'
-            ]);
+            ])->add('status',ChoiceType::class,[
+                'choices' => [
+                    'pending'=>'pending',
+                    'active'=>'active',
+                    'blocked' => 'blocked'
+                ],
+            ])
+
+            ;
         }
         $builder->add('tags',TextType::class,array(
                 'label'=>'Тэги',
