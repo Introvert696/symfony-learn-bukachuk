@@ -14,6 +14,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BlogRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Blog
 {
     #[ORM\Id]
@@ -49,8 +50,12 @@ class Blog
     #[ORM\ManyToMany(targetEntity: 'App\Entity\Tag',cascade: ['persist'])]
     private ArrayCollection|PersistentCollection $tags;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank]
+    #[ORM\Column(type: Types::STRING)]
     private ?string $status = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTime $blockAt;
 
 
     #[ORM\Column(type: Types::SMALLINT,nullable: true)]
@@ -59,6 +64,15 @@ class Blog
 
     public function __construct(UserInterface|User $user){
         $this->user = $user;
+    }
+    #[ORM\PreUpdate]
+    public function setBlockedAtValue(): void
+    {
+
+        if( $this->status == 'blocked' && !$this->blockAt){
+            $this->blockAt = new \DateTime();
+        }
+//        dd($this);
     }
 
     public function getId(): ?int
@@ -171,6 +185,20 @@ class Blog
     public function setStatus(?string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+
+    public function getBlockAt(): ?\DateTime
+    {
+        return $this->blockAt;
+    }
+
+
+    public function setBlockAt(?\DateTime $blockAt): static
+    {
+        $this->blockAt = $blockAt;
 
         return $this;
     }
