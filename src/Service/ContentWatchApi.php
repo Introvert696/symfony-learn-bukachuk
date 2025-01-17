@@ -7,10 +7,9 @@ class ContentWatchApi
     public function __construct(
         private readonly string $key,
         $translator
-//        Тут мы прописываем то что хотим что то получить при помощи autowire, но не указали конкретно что
     )
     {
-        dd($translator);
+
     }
     public function checkText(string $text) : int
     {

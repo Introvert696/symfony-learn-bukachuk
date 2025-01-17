@@ -42,7 +42,7 @@ class BlogRepository extends ServiceEntityRepository
                 ->setParameter('title', '%' .$blogFilter->getTitle().'%');
         }
 //        dd($blogs->getQuery()->getSQL());
-
+        $blogs->orderBy('b.id','DESC');
         return $blogs;
 
     }
