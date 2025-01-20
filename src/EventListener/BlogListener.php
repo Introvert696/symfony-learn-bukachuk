@@ -15,7 +15,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 #[AsDoctrineListener(event: Events::postPersist, priority: 500, connection: 'default')]
 class BlogListener
 {
-    private array $entitys;
+    private array $entitys=[];
     public function __construct(private MessageBusInterface $bus){
 
     }
