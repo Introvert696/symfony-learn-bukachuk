@@ -42,7 +42,7 @@ class Blog
     private Category|null $category = null;
 
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class,cascade: ['persist'])]
     #[ORM\JoinColumn(name:'user_id',referencedColumnName:'id')]
     private User|null $user = null;
 

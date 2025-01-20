@@ -31,8 +31,9 @@ class BlogRepository extends ServiceEntityRepository
                         ->getResult();
     }
 
-    public function findByTitle(string $title): Blog
+    public function findByTitle(string $title): null | Blog
     {
+//        dd($this->findOneBy(['title'=>$title]));
         return $this->findOneBy(['title'=>$title]);
     }
 

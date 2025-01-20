@@ -6,7 +6,6 @@ use App\Entity\Blog;
 use App\Repository\BlogRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -19,6 +18,7 @@ class NewsGrabber{
         private readonly EntityManagerInterface $em,
         private  readonly  BlogRepository $blogRepository,
         private  readonly  ParameterBagInterface $parameterBag,
+        private  readonly HttpClient $httpClient,
 
     )
     {
@@ -35,20 +35,14 @@ class NewsGrabber{
      * @return void
      * @throws GuzzleException
      */
-    public function importNews(?int $count,bool $dryRun): void
+    public function importNews(?int $count = null,bool $dryRun = false): void
     {
         $this->logger->info('Start getting news');
-        $client = new Client([
-            'timeout'  => 7.0,
-        ]);
-
-        $response = $client->get('https://www.engadget.com/news', ['verify' => false]);
-
         $texts = [];
 
-        $crawler = new Crawler($response->getBody()->getContents());
+        $crawler = new Crawler($this->httpClient->get('https://engadget.com/news/'));
         $crawler->filter('h4.My\(0\) > a')->each(function(Crawler $crawler) use(&$texts,$count){
-            if(count($texts) >= $count){
+            if($count && count($texts) >= $count){
                 return;
             }
             $texts[] = [
@@ -59,8 +53,7 @@ class NewsGrabber{
         unset($crawler);
         $this->logger->info(sprintf('get %d news', count($texts)));
         foreach ($texts as &$text){
-            $response = $client->get('https://www.engadget.com'.$text['href'], ['verify' => false]);
-            $crawler = new Crawler($response->getBody()->getContents());
+            $crawler = new Crawler( $this->httpClient->get('https://engadget.com'.$text['href']));
             $crowblerBody = $crawler->filter('div.caas-body')->first();
             $text['text'] = $crowblerBody->text();
 
@@ -76,6 +69,7 @@ class NewsGrabber{
         $this->logger->info('Save news');
 
         $blogUser = $this->userRepository->find($this->parameterBag->get('autoblog'));
+//        dd($blogUser);
         if(!$blogUser)
         {
             $this->logger->error(sprintf('User is not found %s ',$this->parameterBag->get('autoblog')));
@@ -83,11 +77,12 @@ class NewsGrabber{
         }
 
         foreach($texts as $text) {
+//            dd($this->blogRepository->findByTitle($text['title']));
             if($this->blogRepository->findByTitle($text['title'])){
                 $this->logger->info(sprintf('News already exists %s',$text['title']));
                 continue;
             }
-            if(!$dryRun){
+            if($dryRun){
                 continue;
             }
             $this->logger->info(sprintf('Save blog %s',$text['title']));
@@ -97,6 +92,7 @@ class NewsGrabber{
                 ->setDescription(mb_substr($text['text'],0,200))
                 ->setText($text['text'])
                 ->setStatus('pending');
+            dd($blog);
             $this->em->persist($blog);
         }
         $this->em->flush();
