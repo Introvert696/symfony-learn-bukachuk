@@ -44,7 +44,6 @@ final class BlogController extends AbstractController
     public function new(
                         Request $request,
                         EntityManagerInterface $entityManager,
-                        MessageBusInterface $bus
                         ): Response
     {
         $blog = new Blog($this->getUser());
@@ -52,12 +51,8 @@ final class BlogController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-//            dd($blog);
             $entityManager->persist($blog);
             $entityManager->flush();
-
-
-
 
             return $this->redirectToRoute('app_user_blog_index', [], Response::HTTP_SEE_OTHER);
         }
