@@ -26,7 +26,14 @@ class BlogRepository extends ServiceEntityRepository
 
         return $this->createQueryBuilder('b')
                         ->setMaxResults(6)
-                        ->getQuery()->getResult();
+                        ->orderBy('b.id','DESC')
+                        ->getQuery()
+                        ->getResult();
+    }
+
+    public function findByTitle(string $title): Blog
+    {
+        return $this->findOneBy(['title'=>$title]);
     }
 
     public function findByBlogFilter(BlogFilter $blogFilter)
@@ -45,7 +52,6 @@ class BlogRepository extends ServiceEntityRepository
                 ->andWhere('b.title LIKE :title')
                 ->setParameter('title', '%' .$blogFilter->getTitle().'%');
         }
-//        dd($blogs->getQuery()->getSQL());
         $blogs->orderBy('b.id','DESC');
         return $blogs;
 
