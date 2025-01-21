@@ -30,10 +30,23 @@ class NewsGrabberTest extends KernelTestCase
 
         $httpClient = $this->createMock(HttpClient::class);
 
-        $httpClient->method('get')
-            ->with('https://engadget.com/news/')
-            ->willReturn(file_get_contents('tests/DataProvider/index.html'));
-        static::getContainer()->set(UserRepository::class,$httpClient);
+        $httpClient
+            ->method('get')
+            ->willReturnCallback(function ($url){
+
+                if($url == 'https://engadget.com/news/'){
+                    return file_get_contents('tests/DataProvider/index.html');
+                }
+                else {
+                    static $index =0;
+                    return file_get_contents('tests/DataProvider/news'.++$index.'.html');
+
+                }
+            });
+
+//            ->with('https://engadget.com/news/')
+//            ->willReturn(file_get_contents('tests/DataProvider/index.html'))
+        static::getContainer()->set(HttpClient::class,$httpClient);
 
         $newsGrabber = static::getContainer()->get(NewsGrabber::class);
         assert($newsGrabber instanceof NewsGrabber);
@@ -48,7 +61,7 @@ class NewsGrabberTest extends KernelTestCase
 
 
         $blogs = $blogRepository->getBlogs();
-        self::assertCount(6,$blogs);
+        self::assertCount(20,$blogs);
 
     }
 }
